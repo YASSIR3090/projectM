@@ -13,7 +13,6 @@ const Home = () => {
   const [stats, setStats] = useState({ total: 0, delivered: 0, in_transit: 0, pending: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
   
-  // Admin Login Modal
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -71,9 +70,7 @@ const Home = () => {
     }
   };
 
-  // ==================== STYLES ====================
   const styles = {
-    // Navbar
     navbar: {
       backgroundColor: '#003366',
       padding: '12px 0',
@@ -103,8 +100,6 @@ const Home = () => {
       alignItems: 'center',
       gap: '8px'
     },
-
-    // Section Borders
     sectionBorder: {
       border: '3px solid #003366',
       borderRadius: '16px',
@@ -121,8 +116,6 @@ const Home = () => {
       backgroundColor: '#f8f9fa',
       boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
     },
-
-    // Hero
     hero: {
       background: 'linear-gradient(135deg, #003366 0%, #0055a4 50%, #0077be 100%)',
       color: 'white',
@@ -160,8 +153,6 @@ const Home = () => {
       textDecoration: 'none',
       cursor: 'pointer'
     },
-
-    // Track Card
     trackCard: {
       boxShadow: '0 10px 40px rgba(0,0,0,0.25)',
       border: 'none',
@@ -184,8 +175,6 @@ const Home = () => {
       border: 'none',
       width: '100%'
     },
-
-    // Stats Cards
     statsCard: {
       border: '2px solid #003366',
       textAlign: 'center',
@@ -204,8 +193,6 @@ const Home = () => {
       margin: 0,
       fontSize: '0.95rem'
     },
-
-    // Services Cards
     serviceCard: {
       border: '2px solid #003366',
       borderRadius: '12px',
@@ -229,8 +216,6 @@ const Home = () => {
       margin: 0,
       fontSize: '0.95rem'
     },
-
-    // CTA
     ctaSection: {
       background: 'linear-gradient(135deg, #003366 0%, #0055a4 100%)',
       color: 'white',
@@ -249,8 +234,6 @@ const Home = () => {
       display: 'inline-block',
       cursor: 'pointer'
     },
-
-    // Admin Quick Access
     adminQuickAccess: {
       backgroundColor: '#f8f9fa',
       borderRadius: '12px',
@@ -271,8 +254,6 @@ const Home = () => {
       border: '1px solid #dee2e6',
       cursor: 'pointer'
     },
-
-    // Modal
     modalHeader: {
       backgroundColor: '#003366',
       color: 'white',
@@ -302,10 +283,8 @@ const Home = () => {
     }
   };
 
-  // ==================== RENDER ====================
   return (
     <>
-      {/* NAVBAR */}
       <Navbar expand="lg" style={styles.navbar}>
         <Container>
           <Navbar.Brand as={Link} to="/" style={styles.navbarBrand}>
@@ -330,7 +309,6 @@ const Home = () => {
         </Container>
       </Navbar>
 
-      {/* ADMIN QUICK ACCESS BAR */}
       <div style={{ backgroundColor: '#e9ecef', padding: '10px 0', borderBottom: '2px solid #ffc107' }}>
         <Container>
           <div style={styles.adminQuickAccess}>
@@ -350,7 +328,6 @@ const Home = () => {
         </Container>
       </div>
 
-      {/* ====== HERO SECTION WITH BORDER ====== */}
       <Container style={{ marginTop: '30px' }}>
         <div style={styles.sectionBorder}>
           <div style={styles.hero}>
@@ -406,7 +383,6 @@ const Home = () => {
         </div>
       </Container>
 
-      {/* ====== STATS SECTION WITH BORDER ====== */}
       <Container>
         <div style={styles.sectionBorderYellow}>
           <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '30px' }}>
@@ -477,7 +453,6 @@ const Home = () => {
         </div>
       </Container>
 
-      {/* ====== SERVICES SECTION WITH BORDER ====== */}
       <Container>
         <div style={styles.sectionBorder}>
           <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '30px' }}>
@@ -515,7 +490,6 @@ const Home = () => {
         </div>
       </Container>
 
-      {/* ====== CTA SECTION WITH BORDER ====== */}
       <Container>
         <div style={styles.sectionBorderYellow}>
           <div style={styles.ctaSection}>
@@ -537,7 +511,6 @@ const Home = () => {
 
       <Footer />
 
-      {/* ====== ADMIN LOGIN MODAL ====== */}
       <Modal show={showAdminModal} onHide={() => setShowAdminModal(false)} centered>
         <Modal.Header closeButton style={styles.modalHeader}>
           <Modal.Title>
