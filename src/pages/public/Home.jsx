@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { trackingService } from '../../services/tracking';
@@ -9,7 +9,6 @@ import CountUp from 'react-countup';
 import { motion } from 'framer-motion';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-// Import Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -17,7 +16,6 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 
-// Initialize AOS
 AOS.init({
   duration: 1000,
   once: true,
@@ -33,11 +31,11 @@ const Home = () => {
   const [statsLoading, setStatsLoading] = useState(true);
   const [countUpStarted, setCountUpStarted] = useState(false);
 
-  // Hero Slider Images
+  // HERO SLIDER - ONDOA "Secure & Reliable" KUTOKA HAPA
   const heroSlides = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop&q=80',
       title: 'Global Cargo Shipping',
       subtitle: 'Reliable freight forwarding services across the world',
       buttonText: 'Track Now',
@@ -45,7 +43,7 @@ const Home = () => {
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1200&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1200&h=600&fit=crop&q=80',
       title: 'Real-Time Tracking',
       subtitle: 'Monitor your shipments anywhere, anytime',
       buttonText: 'Learn More',
@@ -53,15 +51,7 @@ const Home = () => {
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1566577134770-3c85bb3d3ad4?w=1200&h=600&fit=crop',
-      title: 'Secure & Reliable',
-      subtitle: 'Your cargo is insured and handled with care',
-      buttonText: 'Contact Us',
-      buttonLink: '/contact'
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1543080853-556086153871?w=1200&h=600&fit=crop',
+      image: 'https://images.unsplash.com/photo-1543080853-556086153871?w=1200&h=600&fit=crop&q=80',
       title: 'International Shipping',
       subtitle: 'Shipping to 50+ countries worldwide',
       buttonText: 'Get Started',
@@ -104,13 +94,26 @@ const Home = () => {
     }
   };
 
-  // Styles
   const styles = {
     heroSlider: {
-      height: '600px',
+      height: '500px',
       width: '100%',
       position: 'relative',
       overflow: 'hidden'
+    },
+    slideImage: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover'
+    },
+    slideOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'linear-gradient(135deg, rgba(0,51,102,0.75) 0%, rgba(0,85,164,0.5) 100%)',
+      zIndex: 5
     },
     slideContent: {
       position: 'absolute',
@@ -120,57 +123,68 @@ const Home = () => {
       textAlign: 'center',
       color: 'white',
       zIndex: 10,
-      width: '80%',
-      maxWidth: '800px'
+      width: '85%',
+      maxWidth: '800px',
+      padding: '20px'
     },
     slideTitle: {
-      fontSize: '3.5rem',
+      fontSize: '2.8rem',
       fontWeight: 'bold',
-      textShadow: '2px 2px 8px rgba(0,0,0,0.5)',
-      marginBottom: '16px'
+      textShadow: '2px 2px 8px rgba(0,0,0,0.6)',
+      marginBottom: '12px',
+      lineHeight: '1.2'
     },
     slideSubtitle: {
-      fontSize: '1.3rem',
+      fontSize: '1.1rem',
       textShadow: '1px 1px 4px rgba(0,0,0,0.5)',
       marginBottom: '24px',
-      opacity: 0.9
-    },
-    slideOverlay: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      background: 'linear-gradient(135deg, rgba(0,51,102,0.7) 0%, rgba(0,85,164,0.5) 100%)',
-      zIndex: 5
-    },
-    slideImage: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover'
+      opacity: 0.92,
+      lineHeight: '1.6'
     },
     slideBtn: {
       backgroundColor: '#ffc107',
       color: '#003366',
-      padding: '14px 40px',
+      padding: '12px 36px',
       borderRadius: '50px',
       fontWeight: '600',
       border: 'none',
       textDecoration: 'none',
-      fontSize: '1.1rem',
+      fontSize: '1rem',
       transition: 'all 0.3s ease',
       display: 'inline-block'
+    },
+    trackCard: {
+      boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+      border: '2px solid #ffc107',
+      borderRadius: '16px',
+      backgroundColor: 'white'
+    },
+    trackInput: {
+      border: '2px solid #e9ecef',
+      padding: '12px 16px',
+      borderRadius: '10px',
+      fontSize: '1rem'
+    },
+    trackBtn: {
+      padding: '12px 24px',
+      borderRadius: '10px',
+      fontWeight: 'bold',
+      backgroundColor: '#003366',
+      color: 'white',
+      border: 'none',
+      width: '100%'
     },
     statsCard: {
       border: '2px solid #003366',
       textAlign: 'center',
-      padding: '20px 10px',
+      padding: '20px 15px',
       borderRadius: '12px',
       backgroundColor: 'white',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      height: '100%'
     },
     statsNumber: {
-      fontSize: '2.8rem',
+      fontSize: '2.5rem',
       fontWeight: 'bold',
       color: '#003366',
       margin: '8px 0 4px'
@@ -178,10 +192,7 @@ const Home = () => {
     statsLabel: {
       color: '#6c757d',
       margin: 0,
-      fontSize: '0.95rem'
-    },
-    statsIcon: {
-      fontSize: '2.8rem'
+      fontSize: '0.9rem'
     },
     serviceCard: {
       border: '2px solid #003366',
@@ -193,41 +204,27 @@ const Home = () => {
       transition: 'transform 0.3s ease, box-shadow 0.3s ease'
     },
     serviceIcon: {
-      fontSize: '3.5rem',
+      fontSize: '3.2rem',
       color: '#003366',
       marginBottom: '16px'
     },
     serviceTitle: {
       fontWeight: 'bold',
       marginBottom: '10px',
-      color: '#003366'
+      color: '#003366',
+      fontSize: '1.2rem'
     },
     serviceText: {
       color: '#6c757d',
       margin: 0,
-      fontSize: '0.95rem'
+      fontSize: '0.95rem',
+      lineHeight: '1.6'
     },
-    trackCard: {
-      boxShadow: '0 10px 40px rgba(0,0,0,0.25)',
-      border: 'none',
-      background: 'rgba(255,255,255,0.12)',
-      backdropFilter: 'blur(15px)',
-      borderRadius: '16px'
-    },
-    trackInput: {
-      background: 'rgba(255,255,255,0.92)',
-      border: 'none',
-      padding: '12px 16px',
-      borderRadius: '10px'
-    },
-    trackBtn: {
-      padding: '12px',
-      borderRadius: '10px',
-      fontWeight: 'bold',
-      backgroundColor: '#ffc107',
-      color: '#003366',
-      border: 'none',
-      width: '100%'
+    ctaSection: {
+      background: 'linear-gradient(135deg, #003366 0%, #0055a4 100%)',
+      color: 'white',
+      padding: '50px 0',
+      textAlign: 'center'
     }
   };
 
@@ -235,8 +232,8 @@ const Home = () => {
     <>
       <Navbar />
 
-      {/* ====== HERO SLIDER SECTION ====== */}
-      <section style={styles.heroSlider} data-aos="fade-in">
+      {/* ====== HERO SLIDER ====== */}
+      <section style={styles.heroSlider}>
         <Swiper
           modules={[Navigation, Pagination, Autoplay, EffectFade]}
           navigation
@@ -246,23 +243,23 @@ const Home = () => {
           loop={true}
           style={{ height: '100%', width: '100%' }}
         >
-          {heroSlides.map((slide, index) => (
+          {heroSlides.map((slide) => (
             <SwiperSlide key={slide.id}>
               <div style={{ position: 'relative', height: '100%', width: '100%' }}>
                 <img 
                   src={slide.image} 
                   alt={slide.title}
                   style={styles.slideImage}
+                  loading="lazy"
                 />
                 <div style={styles.slideOverlay}></div>
                 
-                {/* Slide Content with Animation */}
                 <div style={styles.slideContent}>
                   <motion.h1 
                     style={styles.slideTitle}
-                    initial={{ opacity: 0, y: 50 }}
+                    initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
+                    transition={{ duration: 0.7, delay: 0.2 }}
                   >
                     {slide.title}
                   </motion.h1>
@@ -270,14 +267,14 @@ const Home = () => {
                     style={styles.slideSubtitle}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.5 }}
+                    transition={{ duration: 0.7, delay: 0.4 }}
                   >
                     {slide.subtitle}
                   </motion.p>
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: 0.8 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
                   >
                     <Link to={slide.buttonLink} style={styles.slideBtn}>
                       {slide.buttonText}
@@ -296,7 +293,7 @@ const Home = () => {
           <Row className="justify-content-center">
             <Col lg={8}>
               <Card style={styles.trackCard}>
-                <Card.Body style={{ padding: '32px' }}>
+                <Card.Body style={{ padding: '30px' }}>
                   <h4 style={{ color: '#003366', marginBottom: '16px', fontWeight: 'bold' }}>
                     <i className="bi bi-search me-2"></i>
                     Track Your Cargo
@@ -333,7 +330,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* ====== STATS SECTION WITH COUNTER ====== */}
+      {/* ====== STATS SECTION ====== */}
       <section style={{ padding: '60px 0', backgroundColor: 'white' }} data-aos="fade-up">
         <Container>
           <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '40px' }}>
@@ -343,7 +340,7 @@ const Home = () => {
             <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="100">
               <Card style={styles.statsCard}>
                 <Card.Body>
-                  <i className="bi bi-box-seam" style={{ ...styles.statsIcon, color: '#003366' }}></i>
+                  <i className="bi bi-box-seam" style={{ fontSize: '2.5rem', color: '#003366' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.total} duration={2.5} separator="," />
@@ -356,7 +353,7 @@ const Home = () => {
             <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="200">
               <Card style={styles.statsCard}>
                 <Card.Body>
-                  <i className="bi bi-check-circle" style={{ ...styles.statsIcon, color: '#198754' }}></i>
+                  <i className="bi bi-check-circle" style={{ fontSize: '2.5rem', color: '#198754' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.delivered} duration={2.5} separator="," />
@@ -369,7 +366,7 @@ const Home = () => {
             <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="300">
               <Card style={styles.statsCard}>
                 <Card.Body>
-                  <i className="bi bi-truck" style={{ ...styles.statsIcon, color: '#ffc107' }}></i>
+                  <i className="bi bi-truck" style={{ fontSize: '2.5rem', color: '#ffc107' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.in_transit} duration={2.5} separator="," />
@@ -382,7 +379,7 @@ const Home = () => {
             <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="400">
               <Card style={styles.statsCard}>
                 <Card.Body>
-                  <i className="bi bi-clock-history" style={{ ...styles.statsIcon, color: '#dc3545' }}></i>
+                  <i className="bi bi-clock-history" style={{ fontSize: '2.5rem', color: '#dc3545' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.pending} duration={2.5} separator="," />
@@ -396,7 +393,7 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* ====== SERVICES SECTION ====== */}
+      {/* ====== SERVICES SECTION - SECURE & RELIABLE IPO HAPA TU ====== */}
       <section style={{ padding: '60px 0', backgroundColor: '#f8f9fa' }} data-aos="fade-up">
         <Container>
           <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '40px' }}>
@@ -417,7 +414,7 @@ const Home = () => {
                 <Card.Body>
                   <i className="bi bi-search" style={styles.serviceIcon}></i>
                   <h5 style={styles.serviceTitle}>Real-time Tracking</h5>
-                  <p style={styles.serviceText}>Track your cargo in real-time with detailed status updates at every step.</p>
+                  <p style={styles.serviceText}>Track your cargo in real-time with detailed status updates at every step of the journey.</p>
                 </Card.Body>
               </Card>
             </Col>
@@ -425,8 +422,8 @@ const Home = () => {
               <Card style={styles.serviceCard}>
                 <Card.Body>
                   <i className="bi bi-shield-check" style={styles.serviceIcon}></i>
-                  <h5 style={styles.serviceTitle}>Secure & Reliable</h5>
-                  <p style={styles.serviceText}>Your cargo is insured and handled with the highest security standards.</p>
+                  <h5 style={{ ...styles.serviceTitle, color: '#003366' }}>Secure &amp; Reliable</h5>
+                  <p style={styles.serviceText}>Your cargo is insured and handled with the highest security standards and care.</p>
                 </Card.Body>
               </Card>
             </Col>
@@ -435,12 +432,7 @@ const Home = () => {
       </section>
 
       {/* ====== CTA SECTION ====== */}
-      <section style={{ 
-        background: 'linear-gradient(135deg, #003366 0%, #0055a4 100%)',
-        color: 'white',
-        padding: '60px 0',
-        textAlign: 'center'
-      }} data-aos="zoom-in">
+      <section style={styles.ctaSection} data-aos="zoom-in">
         <Container>
           <motion.h2 
             style={{ marginBottom: '8px' }}
