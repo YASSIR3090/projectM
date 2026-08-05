@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Navbar, Nav, Container, Button, Offcanvas } from 'react-bootstrap';
+import { Navbar, Nav, Container, Offcanvas } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const MainNavbar = () => {
@@ -26,9 +26,6 @@ const MainNavbar = () => {
       padding: '8px 16px',
       fontSize: '0.95rem',
       transition: 'color 0.2s'
-    },
-    navLinkHover: {
-      color: 'white'
     },
     contactBtn: {
       backgroundColor: '#ffc107',
@@ -57,17 +54,20 @@ const MainNavbar = () => {
     },
     toggler: {
       border: 'none',
-      padding: '4px 8px'
+      padding: '4px 8px',
+      backgroundColor: 'transparent'
     },
     togglerIcon: {
       color: 'white',
       fontSize: '1.8rem',
       fontWeight: '300'
     },
-    // Offcanvas styles - MUHIMU SANA!
+
+    // ===== OFFCANVAS - KUSHOTO (LEFT) =====
     offcanvas: {
-      backgroundColor: '#003366', // Rangi moja na navbar
-      color: 'white'
+      backgroundColor: '#003366',
+      color: 'white',
+      width: '280px'
     },
     offcanvasHeader: {
       backgroundColor: '#003366',
@@ -77,42 +77,50 @@ const MainNavbar = () => {
     },
     offcanvasTitle: {
       fontWeight: 'bold',
-      color: 'white'
+      color: 'white',
+      fontSize: '1.1rem'
     },
     offcanvasClose: {
       color: 'white',
       opacity: 0.8,
       border: 'none',
       background: 'none',
-      fontSize: '1.5rem'
+      fontSize: '1.5rem',
+      padding: '0 8px'
     },
     offcanvasBody: {
-      padding: '20px',
-      backgroundColor: '#003366' // Rangi moja na navbar
+      padding: '16px 0',
+      backgroundColor: '#003366'
     },
     offcanvasNav: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '4px'
+      gap: '2px',
+      padding: '0'
     },
     offcanvasLink: {
-      fontSize: '1.05rem',
+      fontSize: '1rem',
       color: 'rgba(255,255,255,0.85)',
       textDecoration: 'none',
-      padding: '12px 16px',
-      borderRadius: '8px',
-      transition: 'background 0.2s',
+      padding: '12px 20px',
+      transition: 'all 0.2s',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px'
+      gap: '12px',
+      borderLeft: '3px solid transparent'
     },
-    offcanvasLinkHover: {
-      backgroundColor: 'rgba(255,255,255,0.1)',
-      color: 'white'
+    offcanvasLinkActive: {
+      backgroundColor: 'rgba(255,255,255,0.08)',
+      color: 'white',
+      borderLeftColor: '#ffc107'
+    },
+    offcanvasDivider: {
+      borderColor: 'rgba(255,255,255,0.08)',
+      margin: '8px 16px'
     },
     offcanvasBtn: {
-      width: '100%',
-      marginTop: '8px',
+      width: 'calc(100% - 32px)',
+      margin: '8px 16px',
       borderRadius: '50px',
       padding: '12px',
       backgroundColor: '#ffc107',
@@ -122,11 +130,23 @@ const MainNavbar = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px'
+      gap: '8px',
+      textDecoration: 'none',
+      transition: 'all 0.3s ease'
     },
-    offcanvasDivider: {
-      borderColor: 'rgba(255,255,255,0.1)',
-      margin: '12px 0'
+    offcanvasBrand: {
+      color: 'white',
+      textDecoration: 'none',
+      fontWeight: 'bold',
+      fontSize: '1.1rem',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px'
+    },
+    offcanvasIcon: {
+      fontSize: '1.2rem',
+      width: '24px',
+      textAlign: 'center'
     }
   };
 
@@ -139,46 +159,46 @@ const MainNavbar = () => {
             Global Track Cargo
           </Link>
           
-          <Navbar.Toggle 
-            aria-controls="main-navbar" 
-            onClick={() => setShowOffcanvas(true)}
+          {/* Toggle Button - Inafungua Offcanvas kutoka Kushoto */}
+          <button 
+            onClick={() => setShowOffcanvas(true)} 
             style={navbarStyles.toggler}
+            aria-label="Toggle navigation"
           >
             <span style={navbarStyles.togglerIcon}>☰</span>
-          </Navbar.Toggle>
+          </button>
           
-          <Navbar.Collapse id="main-navbar">
-            <Nav className="ms-auto align-items-center gap-1">
-              <Link to="/" style={navbarStyles.navLink}>Home</Link>
-              <Link to="/about" style={navbarStyles.navLink}>About</Link>
-              <Link to="/services" style={navbarStyles.navLink}>Services</Link>
-              <Link to="/track" style={navbarStyles.navLink}>
-                <i className="bi bi-search me-1"></i>Track
-              </Link>
-              <Link to="/contact" style={navbarStyles.contactBtn}>
-                Contact
-              </Link>
-              <Link to="/admin-login" style={navbarStyles.adminBtn}>
-                <i className="bi bi-shield-lock-fill"></i>
-                Admin
-              </Link>
-            </Nav>
-          </Navbar.Collapse>
+          {/* Desktop Menu - Inaonekana kwenye screen kubwa tu */}
+          <div className="d-none d-lg-flex align-items-center gap-1">
+            <Link to="/" style={navbarStyles.navLink}>Home</Link>
+            <Link to="/about" style={navbarStyles.navLink}>About</Link>
+            <Link to="/services" style={navbarStyles.navLink}>Services</Link>
+            <Link to="/track" style={navbarStyles.navLink}>
+              <i className="bi bi-search me-1"></i>Track
+            </Link>
+            <Link to="/contact" style={navbarStyles.contactBtn}>
+              Contact
+            </Link>
+            <Link to="/admin-login" style={navbarStyles.adminBtn}>
+              <i className="bi bi-shield-lock-fill"></i>
+              Admin
+            </Link>
+          </div>
         </Container>
       </Navbar>
 
-      {/* OFF CANVAS - MOBILE MENU - RANGI MOJA NA NAVBAR */}
+      {/* ===== OFFCANVAS - SIDEBAR KUSHOTO (LEFT) ===== */}
       <Offcanvas 
         show={showOffcanvas} 
         onHide={() => setShowOffcanvas(false)} 
-        placement="end"
+        placement="start"  // <--- HII NI KUSHOTO (LEFT)
         style={navbarStyles.offcanvas}
       >
         <Offcanvas.Header style={navbarStyles.offcanvasHeader}>
-          <Offcanvas.Title style={navbarStyles.offcanvasTitle}>
-            <i className="bi bi-box-seam me-2"></i>
+          <Link to="/" style={navbarStyles.offcanvasBrand} onClick={() => setShowOffcanvas(false)}>
+            <i className="bi bi-box-seam"></i>
             Global Track
-          </Offcanvas.Title>
+          </Link>
           <button 
             onClick={() => setShowOffcanvas(false)} 
             style={navbarStyles.offcanvasClose}
@@ -186,27 +206,57 @@ const MainNavbar = () => {
             ✕
           </button>
         </Offcanvas.Header>
+        
         <Offcanvas.Body style={navbarStyles.offcanvasBody}>
           <Nav className="flex-column" style={navbarStyles.offcanvasNav}>
-            <Link to="/" style={navbarStyles.offcanvasLink} onClick={() => setShowOffcanvas(false)}>
-              <i className="bi bi-house"></i> Home
+            <Link 
+              to="/" 
+              style={navbarStyles.offcanvasLink} 
+              onClick={() => setShowOffcanvas(false)}
+            >
+              <i className="bi bi-house" style={navbarStyles.offcanvasIcon}></i>
+              Home
             </Link>
-            <Link to="/about" style={navbarStyles.offcanvasLink} onClick={() => setShowOffcanvas(false)}>
-              <i className="bi bi-info-circle"></i> About
+            <Link 
+              to="/about" 
+              style={navbarStyles.offcanvasLink} 
+              onClick={() => setShowOffcanvas(false)}
+            >
+              <i className="bi bi-info-circle" style={navbarStyles.offcanvasIcon}></i>
+              About
             </Link>
-            <Link to="/services" style={navbarStyles.offcanvasLink} onClick={() => setShowOffcanvas(false)}>
-              <i className="bi bi-grid"></i> Services
+            <Link 
+              to="/services" 
+              style={navbarStyles.offcanvasLink} 
+              onClick={() => setShowOffcanvas(false)}
+            >
+              <i className="bi bi-grid" style={navbarStyles.offcanvasIcon}></i>
+              Services
             </Link>
-            <Link to="/track" style={navbarStyles.offcanvasLink} onClick={() => setShowOffcanvas(false)}>
-              <i className="bi bi-search"></i> Track
+            <Link 
+              to="/track" 
+              style={navbarStyles.offcanvasLink} 
+              onClick={() => setShowOffcanvas(false)}
+            >
+              <i className="bi bi-search" style={navbarStyles.offcanvasIcon}></i>
+              Track
             </Link>
-            <Link to="/contact" style={navbarStyles.offcanvasLink} onClick={() => setShowOffcanvas(false)}>
-              <i className="bi bi-envelope"></i> Contact
+            <Link 
+              to="/contact" 
+              style={navbarStyles.offcanvasLink} 
+              onClick={() => setShowOffcanvas(false)}
+            >
+              <i className="bi bi-envelope" style={navbarStyles.offcanvasIcon}></i>
+              Contact
             </Link>
             
             <hr style={navbarStyles.offcanvasDivider} />
             
-            <Link to="/admin-login" style={navbarStyles.offcanvasBtn} onClick={() => setShowOffcanvas(false)}>
+            <Link 
+              to="/admin-login" 
+              style={navbarStyles.offcanvasBtn} 
+              onClick={() => setShowOffcanvas(false)}
+            >
               <i className="bi bi-shield-lock-fill"></i>
               Admin Login
             </Link>
