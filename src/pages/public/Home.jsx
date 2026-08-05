@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Form, Button, Nav, Navbar, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { trackingService } from '../../services/tracking';
-import { authService } from '../../services/auth';
 import toast from 'react-hot-toast';
+import Navbar from '../../components/common/Navbar';
 import Footer from '../../components/common/Footer';
 import CountUp from 'react-countup';
 import { motion } from 'framer-motion';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+// Import Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-fade';
+import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 
 // Initialize AOS
 AOS.init({
@@ -24,12 +31,43 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState({ total: 0, delivered: 0, in_transit: 0, pending: 0 });
   const [statsLoading, setStatsLoading] = useState(true);
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [adminUsername, setAdminUsername] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
-  const [adminLoading, setAdminLoading] = useState(false);
-  const [adminError, setAdminError] = useState('');
   const [countUpStarted, setCountUpStarted] = useState(false);
+
+  // Hero Slider Images
+  const heroSlides = [
+    {
+      id: 1,
+      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=600&fit=crop',
+      title: 'Global Cargo Shipping',
+      subtitle: 'Reliable freight forwarding services across the world',
+      buttonText: 'Track Now',
+      buttonLink: '/track'
+    },
+    {
+      id: 2,
+      image: 'https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=1200&h=600&fit=crop',
+      title: 'Real-Time Tracking',
+      subtitle: 'Monitor your shipments anywhere, anytime',
+      buttonText: 'Learn More',
+      buttonLink: '/services'
+    },
+    {
+      id: 3,
+      image: 'https://images.unsplash.com/photo-1566577134770-3c85bb3d3ad4?w=1200&h=600&fit=crop',
+      title: 'Secure & Reliable',
+      subtitle: 'Your cargo is insured and handled with care',
+      buttonText: 'Contact Us',
+      buttonLink: '/contact'
+    },
+    {
+      id: 4,
+      image: 'https://images.unsplash.com/photo-1543080853-556086153871?w=1200&h=600&fit=crop',
+      title: 'International Shipping',
+      subtitle: 'Shipping to 50+ countries worldwide',
+      buttonText: 'Get Started',
+      buttonLink: '/services'
+    }
+  ];
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -37,7 +75,6 @@ const Home = () => {
       try {
         const response = await trackingService.getStats();
         setStats(response);
-        // Start counter animation after stats load
         setTimeout(() => setCountUpStarted(true), 500);
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -47,8 +84,6 @@ const Home = () => {
       }
     };
     fetchStats();
-    
-    // Refresh AOS on component mount
     AOS.refresh();
   }, []);
 
@@ -69,128 +104,62 @@ const Home = () => {
     }
   };
 
-  const handleAdminLogin = async (e) => {
-    e.preventDefault();
-    setAdminLoading(true);
-    setAdminError('');
-    
-    try {
-      await authService.login(adminUsername, adminPassword);
-      toast.success('Login successful!');
-      setShowAdminModal(false);
-      navigate('/admin');
-    } catch (error) {
-      setAdminError(error.response?.data?.detail || 'Invalid username or password');
-      toast.error('Login failed');
-    } finally {
-      setAdminLoading(false);
-    }
-  };
-
+  // Styles
   const styles = {
-    navbar: {
-      backgroundColor: '#003366',
-      padding: '12px 0',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-    },
-    navbarBrand: {
-      fontWeight: 'bold',
-      fontSize: '1.4rem',
-      color: 'white',
-      textDecoration: 'none'
-    },
-    navLink: {
-      color: 'rgba(255,255,255,0.85)',
-      textDecoration: 'none',
-      padding: '8px 16px',
-      fontSize: '0.95rem'
-    },
-    adminBtn: {
-      backgroundColor: '#ffc107',
-      color: '#003366',
-      padding: '8px 20px',
-      borderRadius: '50px',
-      fontWeight: '600',
-      border: 'none',
-      cursor: 'pointer',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    sectionBorder: {
-      border: '3px solid #003366',
-      borderRadius: '16px',
-      padding: '30px 20px',
-      marginBottom: '30px',
-      backgroundColor: 'white',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-    },
-    sectionBorderYellow: {
-      border: '3px solid #ffc107',
-      borderRadius: '16px',
-      padding: '30px 20px',
-      marginBottom: '30px',
-      backgroundColor: '#f8f9fa',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
-    },
-    hero: {
-      background: 'linear-gradient(135deg, #003366 0%, #0055a4 50%, #0077be 100%)',
-      color: 'white',
-      padding: '60px 0',
-      borderRadius: '13px',
+    heroSlider: {
+      height: '600px',
+      width: '100%',
       position: 'relative',
       overflow: 'hidden'
     },
-    heroTitle: {
-      fontSize: '3rem',
+    slideContent: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      textAlign: 'center',
+      color: 'white',
+      zIndex: 10,
+      width: '80%',
+      maxWidth: '800px'
+    },
+    slideTitle: {
+      fontSize: '3.5rem',
       fontWeight: 'bold',
+      textShadow: '2px 2px 8px rgba(0,0,0,0.5)',
       marginBottom: '16px'
     },
-    heroSubtitle: {
-      fontSize: '1.1rem',
-      opacity: 0.9,
-      marginBottom: '24px'
+    slideSubtitle: {
+      fontSize: '1.3rem',
+      textShadow: '1px 1px 4px rgba(0,0,0,0.5)',
+      marginBottom: '24px',
+      opacity: 0.9
     },
-    heroBtnPrimary: {
+    slideOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'linear-gradient(135deg, rgba(0,51,102,0.7) 0%, rgba(0,85,164,0.5) 100%)',
+      zIndex: 5
+    },
+    slideImage: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover'
+    },
+    slideBtn: {
       backgroundColor: '#ffc107',
       color: '#003366',
-      padding: '12px 32px',
+      padding: '14px 40px',
       borderRadius: '50px',
       fontWeight: '600',
       border: 'none',
-      textDecoration: 'none'
-    },
-    heroBtnSecondary: {
-      backgroundColor: 'transparent',
-      color: 'white',
-      padding: '12px 32px',
-      borderRadius: '50px',
-      fontWeight: '600',
-      border: '2px solid rgba(255,255,255,0.5)',
       textDecoration: 'none',
-      cursor: 'pointer'
-    },
-    trackCard: {
-      boxShadow: '0 10px 40px rgba(0,0,0,0.25)',
-      border: 'none',
-      background: 'rgba(255,255,255,0.12)',
-      backdropFilter: 'blur(15px)',
-      borderRadius: '16px'
-    },
-    trackInput: {
-      background: 'rgba(255,255,255,0.92)',
-      border: 'none',
-      padding: '12px 16px',
-      borderRadius: '10px'
-    },
-    trackBtn: {
-      padding: '12px',
-      borderRadius: '10px',
-      fontWeight: 'bold',
-      backgroundColor: '#ffc107',
-      color: '#003366',
-      border: 'none',
-      width: '100%'
+      fontSize: '1.1rem',
+      transition: 'all 0.3s ease',
+      display: 'inline-block'
     },
     statsCard: {
       border: '2px solid #003366',
@@ -238,274 +207,203 @@ const Home = () => {
       margin: 0,
       fontSize: '0.95rem'
     },
-    ctaSection: {
-      background: 'linear-gradient(135deg, #003366 0%, #0055a4 100%)',
-      color: 'white',
-      padding: '50px 0',
-      textAlign: 'center',
-      borderRadius: '13px'
-    },
-    ctaBtn: {
-      backgroundColor: '#ffc107',
-      color: '#003366',
-      padding: '14px 48px',
-      borderRadius: '50px',
-      fontWeight: 'bold',
+    trackCard: {
+      boxShadow: '0 10px 40px rgba(0,0,0,0.25)',
       border: 'none',
-      textDecoration: 'none',
-      display: 'inline-block',
-      cursor: 'pointer',
-      transition: 'transform 0.3s ease'
+      background: 'rgba(255,255,255,0.12)',
+      backdropFilter: 'blur(15px)',
+      borderRadius: '16px'
     },
-    adminQuickAccess: {
-      backgroundColor: '#f8f9fa',
-      borderRadius: '12px',
-      padding: '10px 16px',
-      border: '2px solid #ffc107',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-      flexWrap: 'wrap'
+    trackInput: {
+      background: 'rgba(255,255,255,0.92)',
+      border: 'none',
+      padding: '12px 16px',
+      borderRadius: '10px'
     },
-    adminQuickLink: {
-      backgroundColor: 'white',
-      padding: '5px 14px',
-      borderRadius: '20px',
-      fontSize: '0.85rem',
-      color: '#495057',
-      textDecoration: 'none',
-      border: '1px solid #dee2e6',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease'
-    },
-    modalHeader: {
-      backgroundColor: '#003366',
-      color: 'white',
-      borderBottom: 'none'
-    },
-    modalSubmitBtn: {
-      width: '100%',
+    trackBtn: {
       padding: '12px',
       borderRadius: '10px',
-      fontWeight: '600',
-      backgroundColor: '#003366',
-      color: 'white',
-      border: 'none'
-    },
-    modalError: {
-      color: '#dc3545',
-      fontSize: '0.9rem',
-      marginBottom: '12px'
-    },
-    modalDemoInfo: {
-      marginTop: '16px',
-      padding: '12px 16px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '10px',
-      fontSize: '0.85rem',
-      color: '#6c757d'
+      fontWeight: 'bold',
+      backgroundColor: '#ffc107',
+      color: '#003366',
+      border: 'none',
+      width: '100%'
     }
   };
 
   return (
     <>
-      {/* NAVBAR */}
-      <Navbar expand="lg" style={styles.navbar}>
-        <Container>
-          <Navbar.Brand as={Link} to="/" style={styles.navbarBrand}>
-            <i className="bi bi-box-seam me-2"></i>
-            Global Track Cargo
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
-            <span style={{ color: 'white' }}>☰</span>
-          </Navbar.Toggle>
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto align-items-center gap-1">
-              <Nav.Link as={Link} to="/" style={styles.navLink}>Home</Nav.Link>
-              <Nav.Link as={Link} to="/about" style={styles.navLink}>About</Nav.Link>
-              <Nav.Link as={Link} to="/services" style={styles.navLink}>Services</Nav.Link>
-              <Nav.Link as={Link} to="/track" style={styles.navLink}>Track</Nav.Link>
-              <Nav.Link as={Link} to="/contact" style={styles.navLink}>Contact</Nav.Link>
-              <button onClick={() => setShowAdminModal(true)} style={styles.adminBtn}>
-                <i className="bi bi-shield-lock-fill"></i> Admin Login
-              </button>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      <Navbar />
 
-      {/* ADMIN QUICK ACCESS BAR */}
-      <div style={{ backgroundColor: '#e9ecef', padding: '10px 0', borderBottom: '2px solid #ffc107' }}>
-        <Container>
-          <div style={styles.adminQuickAccess}>
-            <span style={{ fontWeight: 'bold', color: '#003366' }}>
-              <i className="bi bi-speedometer2 me-1"></i> 🔐 Quick Admin:
-            </span>
-            <button onClick={() => setShowAdminModal(true)} style={styles.adminQuickLink}>
-              <i className="bi bi-box-arrow-in-right me-1"></i>Login
-            </button>
-            <Link to="/admin" style={styles.adminQuickLink}>Dashboard</Link>
-            <Link to="/admin/cargo" style={styles.adminQuickLink}>Cargo</Link>
-            <Link to="/admin/cargo/new" style={styles.adminQuickLink}>+ New</Link>
-            <Link to="/admin/customers" style={styles.adminQuickLink}>Customers</Link>
-            <Link to="/admin/messages" style={styles.adminQuickLink}>Messages</Link>
-            <Link to="/admin/settings" style={styles.adminQuickLink}>Settings</Link>
-          </div>
-        </Container>
-      </div>
-
-      {/* ====== HERO SECTION WITH ANIMATION ====== */}
-      <Container style={{ marginTop: '30px' }}>
-        <div style={styles.sectionBorder} data-aos="fade-up">
-          <div style={styles.hero}>
-            <Container>
-              <Row className="align-items-center">
-                <Col lg={6} data-aos="fade-right" data-aos-delay="200">
+      {/* ====== HERO SLIDER SECTION ====== */}
+      <section style={styles.heroSlider} data-aos="fade-in">
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay, EffectFade]}
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          effect="fade"
+          loop={true}
+          style={{ height: '100%', width: '100%' }}
+        >
+          {heroSlides.map((slide, index) => (
+            <SwiperSlide key={slide.id}>
+              <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+                <img 
+                  src={slide.image} 
+                  alt={slide.title}
+                  style={styles.slideImage}
+                />
+                <div style={styles.slideOverlay}></div>
+                
+                {/* Slide Content with Animation */}
+                <div style={styles.slideContent}>
                   <motion.h1 
-                    style={styles.heroTitle}
-                    initial={{ opacity: 0, y: -50 }}
+                    style={styles.slideTitle}
+                    initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
                   >
-                    Global Track Cargo
+                    {slide.title}
                   </motion.h1>
                   <motion.p 
-                    style={styles.heroSubtitle}
+                    style={styles.slideSubtitle}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
+                    transition={{ duration: 0.8, delay: 0.5 }}
                   >
-                    Real-time cargo tracking for international freight forwarding.
-                    Track your shipments anywhere in the world.
+                    {slide.subtitle}
                   </motion.p>
-                  <motion.div 
-                    style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.5 }}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
                   >
-                    <Link to="/track" style={styles.heroBtnPrimary}>
-                      <i className="bi bi-search me-2"></i>Track Now
+                    <Link to={slide.buttonLink} style={styles.slideBtn}>
+                      {slide.buttonText}
                     </Link>
-                    <Link to="/services" style={styles.heroBtnSecondary}>
-                      Learn More
-                    </Link>
-                    <button onClick={() => setShowAdminModal(true)} style={{ ...styles.heroBtnSecondary, borderColor: '#ffc107', color: '#ffc107' }}>
-                      <i className="bi bi-shield-lock me-2"></i>Admin
-                    </button>
                   </motion.div>
-                </Col>
-                <Col lg={6} style={{ marginTop: '30px' }} data-aos="fade-left" data-aos-delay="400">
-                  <Card style={styles.trackCard}>
-                    <Card.Body style={{ padding: '28px' }}>
-                      <h4 style={{ color: 'white', marginBottom: '16px' }}>
-                        <i className="bi bi-search me-2"></i>Track Your Cargo
-                      </h4>
-                      <Form onSubmit={handleTrack}>
-                        <Form.Group style={{ marginBottom: '16px' }}>
-                          <Form.Control
-                            type="text"
-                            placeholder="Enter Tracking Number (e.g., GTC202600001)"
-                            value={trackingNumber}
-                            onChange={(e) => setTrackingNumber(e.target.value.toUpperCase())}
-                            style={styles.trackInput}
-                          />
-                        </Form.Group>
-                        <Button type="submit" disabled={isLoading} style={styles.trackBtn}>
-                          {isLoading ? 'Tracking...' : <><i className="bi bi-search me-2"></i>Track Cargo</>}
-                        </Button>
-                      </Form>
-                      <small style={{ color: 'rgba(255,255,255,0.7)', display: 'block', marginTop: '8px' }}>
-                        Enter your tracking number to get real-time updates
-                      </small>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Container>
-          </div>
-        </div>
-      </Container>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
 
-      {/* ====== STATS SECTION WITH COUNTER ANIMATION ====== */}
-      <Container>
-        <div style={styles.sectionBorderYellow} data-aos="fade-up" data-aos-delay="100">
-          <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '30px' }}>
+      {/* ====== TRACKING SECTION ====== */}
+      <section style={{ padding: '40px 0', backgroundColor: '#f8f9fa' }} data-aos="fade-up">
+        <Container>
+          <Row className="justify-content-center">
+            <Col lg={8}>
+              <Card style={styles.trackCard}>
+                <Card.Body style={{ padding: '32px' }}>
+                  <h4 style={{ color: '#003366', marginBottom: '16px', fontWeight: 'bold' }}>
+                    <i className="bi bi-search me-2"></i>
+                    Track Your Cargo
+                  </h4>
+                  <Form onSubmit={handleTrack}>
+                    <Row className="g-3">
+                      <Col md={9}>
+                        <Form.Control
+                          type="text"
+                          placeholder="Enter Tracking Number (e.g., GTC202600001)"
+                          value={trackingNumber}
+                          onChange={(e) => setTrackingNumber(e.target.value.toUpperCase())}
+                          style={styles.trackInput}
+                        />
+                      </Col>
+                      <Col md={3}>
+                        <Button
+                          type="submit"
+                          disabled={isLoading}
+                          style={styles.trackBtn}
+                        >
+                          {isLoading ? 'Tracking...' : <><i className="bi bi-search me-2"></i>Track</>}
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                  <small style={{ color: '#6c757d', display: 'block', marginTop: '12px' }}>
+                    Enter your tracking number to get real-time updates
+                  </small>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+
+      {/* ====== STATS SECTION WITH COUNTER ====== */}
+      <section style={{ padding: '60px 0', backgroundColor: 'white' }} data-aos="fade-up">
+        <Container>
+          <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '40px' }}>
             📊 Shipment Statistics
           </h2>
           <Row className="g-4">
-            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="200">
+            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="100">
               <Card style={styles.statsCard}>
                 <Card.Body>
                   <i className="bi bi-box-seam" style={{ ...styles.statsIcon, color: '#003366' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.total} duration={2.5} separator="," />
-                    ) : (
-                      '0'
-                    )}
+                    ) : '0'}
                   </h3>
                   <p style={styles.statsLabel}>Total Shipments</p>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="300">
+            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="200">
               <Card style={styles.statsCard}>
                 <Card.Body>
                   <i className="bi bi-check-circle" style={{ ...styles.statsIcon, color: '#198754' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.delivered} duration={2.5} separator="," />
-                    ) : (
-                      '0'
-                    )}
+                    ) : '0'}
                   </h3>
                   <p style={styles.statsLabel}>Delivered</p>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="400">
+            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="300">
               <Card style={styles.statsCard}>
                 <Card.Body>
                   <i className="bi bi-truck" style={{ ...styles.statsIcon, color: '#ffc107' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.in_transit} duration={2.5} separator="," />
-                    ) : (
-                      '0'
-                    )}
+                    ) : '0'}
                   </h3>
                   <p style={styles.statsLabel}>In Transit</p>
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="500">
+            <Col md={3} sm={6} data-aos="zoom-in" data-aos-delay="400">
               <Card style={styles.statsCard}>
                 <Card.Body>
                   <i className="bi bi-clock-history" style={{ ...styles.statsIcon, color: '#dc3545' }}></i>
                   <h3 style={styles.statsNumber}>
                     {countUpStarted && !statsLoading ? (
                       <CountUp end={stats.pending} duration={2.5} separator="," />
-                    ) : (
-                      '0'
-                    )}
+                    ) : '0'}
                   </h3>
                   <p style={styles.statsLabel}>Pending</p>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
-        </div>
-      </Container>
+        </Container>
+      </section>
 
       {/* ====== SERVICES SECTION ====== */}
-      <Container>
-        <div style={styles.sectionBorder} data-aos="fade-up">
-          <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '30px' }}>
+      <section style={{ padding: '60px 0', backgroundColor: '#f8f9fa' }} data-aos="fade-up">
+        <Container>
+          <h2 style={{ textAlign: 'center', fontWeight: 'bold', color: '#003366', marginBottom: '40px' }}>
             🌟 Our Services
           </h2>
           <Row className="g-4">
-            <Col md={4} data-aos="fade-right" data-aos-delay="200">
+            <Col md={4} data-aos="fade-right" data-aos-delay="100">
               <Card style={styles.serviceCard}>
                 <Card.Body>
                   <i className="bi bi-globe2" style={styles.serviceIcon}></i>
@@ -514,7 +412,7 @@ const Home = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4} data-aos="fade-up" data-aos-delay="300">
+            <Col md={4} data-aos="fade-up" data-aos-delay="200">
               <Card style={styles.serviceCard}>
                 <Card.Body>
                   <i className="bi bi-search" style={styles.serviceIcon}></i>
@@ -523,7 +421,7 @@ const Home = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={4} data-aos="fade-left" data-aos-delay="400">
+            <Col md={4} data-aos="fade-left" data-aos-delay="300">
               <Card style={styles.serviceCard}>
                 <Card.Body>
                   <i className="bi bi-shield-check" style={styles.serviceIcon}></i>
@@ -533,100 +431,46 @@ const Home = () => {
               </Card>
             </Col>
           </Row>
-        </div>
-      </Container>
+        </Container>
+      </section>
 
       {/* ====== CTA SECTION ====== */}
-      <Container>
-        <div style={styles.sectionBorderYellow} data-aos="zoom-in">
-          <div style={styles.ctaSection}>
-            <Container>
-              <motion.h2 
-                style={{ marginBottom: '8px' }}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                🚀 Ready to Ship?
-              </motion.h2>
-              <motion.p 
-                style={{ opacity: 0.8, marginBottom: '20px', fontSize: '1.1rem' }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                Experience seamless cargo tracking and management
-              </motion.p>
-              <motion.div 
-                style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <Link to="/contact" style={styles.ctaBtn}>Contact Us Today</Link>
-                <button onClick={() => setShowAdminModal(true)} style={{ ...styles.ctaBtn, backgroundColor: 'white', color: '#003366' }}>
-                  <i className="bi bi-shield-lock me-2"></i>Admin Login
-                </button>
-              </motion.div>
-            </Container>
-          </div>
-        </div>
-      </Container>
+      <section style={{ 
+        background: 'linear-gradient(135deg, #003366 0%, #0055a4 100%)',
+        color: 'white',
+        padding: '60px 0',
+        textAlign: 'center'
+      }} data-aos="zoom-in">
+        <Container>
+          <motion.h2 
+            style={{ marginBottom: '8px' }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            🚀 Ready to Ship?
+          </motion.h2>
+          <motion.p 
+            style={{ opacity: 0.8, marginBottom: '24px', fontSize: '1.1rem' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Experience seamless cargo tracking and management
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Button as={Link} to="/contact" variant="light" size="lg" className="rounded-pill px-5">
+              Contact Us Today
+            </Button>
+          </motion.div>
+        </Container>
+      </section>
 
       <Footer />
-
-      {/* ADMIN LOGIN MODAL */}
-      <Modal show={showAdminModal} onHide={() => setShowAdminModal(false)} centered>
-        <Modal.Header closeButton style={styles.modalHeader}>
-          <Modal.Title>
-            <i className="bi bi-shield-lock-fill me-2"></i>
-            Admin Login
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {adminError && (
-            <div style={styles.modalError}>
-              <i className="bi bi-exclamation-circle me-2"></i>
-              {adminError}
-            </div>
-          )}
-          <Form onSubmit={handleAdminLogin}>
-            <Form.Group className="mb-3">
-              <Form.Label style={{ fontWeight: '500' }}>Username</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter username"
-                value={adminUsername}
-                onChange={(e) => setAdminUsername(e.target.value)}
-                style={{ borderRadius: '10px', padding: '10px 14px', border: '2px solid #e9ecef' }}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label style={{ fontWeight: '500' }}>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter password"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                style={{ borderRadius: '10px', padding: '10px 14px', border: '2px solid #e9ecef' }}
-                required
-              />
-            </Form.Group>
-            <Button type="submit" disabled={adminLoading} style={styles.modalSubmitBtn}>
-              {adminLoading ? (
-                <><span className="spinner-border spinner-border-sm me-2"></span>Logging in...</>
-              ) : (
-                <><i className="bi bi-box-arrow-in-right me-2"></i>Login</>
-              )}
-            </Button>
-          </Form>
-          <div style={styles.modalDemoInfo}>
-            <strong>Demo Credentials:</strong><br />
-            Username: <strong>admin</strong> | Password: <strong>admin123</strong>
-          </div>
-        </Modal.Body>
-      </Modal>
     </>
   );
 };
